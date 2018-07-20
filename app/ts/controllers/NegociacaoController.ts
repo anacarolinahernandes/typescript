@@ -20,8 +20,16 @@ export class NegociacaoController {
 	adiciona(event: Event) {
 		event.preventDefault();
 
+		let data = new Date(this._inputData.val().replace(/-/g, ','));
+
+		if (!this._DiaUtil(data)) {
+			this._mensagemView.update('Negociações só devem ser lançadas em dias úteis!');
+			return;
+		}
+		// getDay serve pro dia da semana, Domingo, Quarta, etc.
+
 		const negociacao = new Negociacao(
-			new Date(this._inputData.val().replace(/-/g, ',')),
+			data,
 			parseInt(this._inputQuantidade.val()),
 			parseFloat(this._inputValor.val())
 		);
@@ -32,4 +40,19 @@ export class NegociacaoController {
 
 		this._mensagemView.update('Negociação adicionada com sucesso!');
 	}
+
+	private _DiaUtil(data: Date) {
+		return data.getDay() != DiaDaSemana.Sábado && data.getDay() != DiaDaSemana.Domingo;
+	}
 }
+
+enum DiaDaSemana {
+	Domingo,
+	Segunda,
+	Terça,
+	Quarta,
+	Quinta,
+	Sexta,
+	Sábado
+}
+// método enum inicia em 0 e termina em 6, a não ser que eu declare o valor da variável de inicialização.
