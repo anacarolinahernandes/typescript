@@ -1,19 +1,19 @@
 import { NegociacoesView, MensagemView } from '../views/index';
 import { Negociacao, Negociacoes } from '../models/index';
+import {domInject} from '../helpers/decorators/domInject';
 
 export class NegociacaoController {
-	private _inputData: JQuery;
-	private _inputQuantidade: JQuery;
-	private _inputValor: JQuery;
+	@domInject('#data') private _inputData: JQuery;
+
+	@domInject('#quantidade') private _inputQuantidade: JQuery;
+
+	@domInject('#valor') private _inputValor: JQuery;
+
 	private _negociacoes = new Negociacoes();
 	private _negociacoesView = new NegociacoesView('#negociacoesView');
 	private _mensagemView = new MensagemView('#mensagemView');
 
 	constructor() {
-		this._inputData = $('#data');
-		this._inputQuantidade = $('#quantidade');
-		this._inputValor = $('#valor');
-
 		this._negociacoesView.update(this._negociacoes);
 	}
 
@@ -53,6 +53,6 @@ enum DiaDaSemana {
 	Quarta,
 	Quinta,
 	Sexta,
-	Sábado
+	Sábado,
 }
 // método enum inicia em 0 e termina em 6, a não ser que eu declare o valor da variável de inicialização.
