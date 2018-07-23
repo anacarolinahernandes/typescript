@@ -1,6 +1,7 @@
 import { NegociacoesView, MensagemView } from '../views/index';
 import { Negociacao, Negociacoes } from '../models/index';
-import {domInject} from '../helpers/decorators/domInject';
+import { domInject, throttle } from '../helpers/decorators/index';
+import { NegociacaoService } from '../services/NegociacaoService';
 
 export class NegociacaoController {
 	@domInject('#data') private _inputData: JQuery;
@@ -12,21 +13,21 @@ export class NegociacaoController {
 	private _negociacoes = new Negociacoes();
 	private _negociacoesView = new NegociacoesView('#negociacoesView');
 	private _mensagemView = new MensagemView('#mensagemView');
+	private _service = new NegociacaoService();
 
 	constructor() {
 		this._negociacoesView.update(this._negociacoes);
 	}
 
-	adiciona(event: Event) {
-		event.preventDefault();
-
+	@throttle()
+	adiciona() {
 		let data = new Date(this._inputData.val().replace(/-/g, ','));
 
 		if (!this._DiaUtil(data)) {
 			this._mensagemView.update('Negociações só devem ser lançadas em dias úteis!');
 			return;
 		}
-		// getDay serve pro dia da semana, Domingo, Quarta, etc.
+		// getDay serve pro dia da semana: Domingo, Quarta, etc.
 
 		const negociacao = new Negociacao(
 			data,
@@ -43,6 +44,30 @@ export class NegociacaoController {
 
 	private _DiaUtil(data: Date) {
 		return data.getDay() != DiaDaSemana.Sábado && data.getDay() != DiaDaSemana.Domingo;
+	}
+
+	@throttle()
+	importaDados() {
+		// const isOk: HandlerFunction = (res: Response) => {
+		// 	if (res.ok) {
+		// 		return res;
+		// 	} else {
+		// 		throw new Error(res.statusText);
+		// 	}
+		// }
+
+		this._service
+			.obterNegociacoes(res => {
+				if (res.ok) {
+					return res;
+				} else {
+					throw new Error(res.statusText);
+				}
+			})
+			.then(negociacoes => {
+				negociacoes.forEach(negociacao => this._negociacoes.adiciona(negociacao));
+				this._negociacoesView.update(this._negociacoes);
+			});
 	}
 }
 
