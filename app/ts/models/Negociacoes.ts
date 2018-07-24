@@ -8,8 +8,12 @@ export class Negociacoes {
 		this._negociacoes.push(negociacao);
 	}
 
-	@logarTempoDeExecucao()
 	paraArray(): Negociacao[] {
 		return ([] as Negociacao[]).concat(this._negociacoes);
+	}
+
+	paraTexto(): void {
+		console.log('Impressão...')
+		console.log(JSON.stringify(this._negociacoes));
 	}
 }
