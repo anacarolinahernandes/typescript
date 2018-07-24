@@ -1,7 +1,7 @@
 import { NegociacoesView, MensagemView } from '../views/index';
 import { Negociacao, Negociacoes } from '../models/index';
 import { domInject, throttle } from '../helpers/decorators/index';
-import { NegociacaoService } from '../services/NegociacaoService';
+import { NegociacaoService } from '../services/index';
 import { imprime } from '../helpers/index';
 
 export class NegociacaoController {
@@ -66,8 +66,15 @@ export class NegociacaoController {
 					throw new Error(res.statusText);
 				}
 			})
-			.then(negociacoes => {
-				negociacoes.forEach(negociacao => this._negociacoes.adiciona(negociacao));
+			.then(negociacoesParaImportar => {
+				const negociacoesImportadas = this._negociacoes.paraArray();
+
+				negociacoesParaImportar
+					.filter(
+						negociacao =>
+							!negociacoesImportadas.some(negociacaoImportada => negociacao.ehIgual(negociacaoImportada))
+					)
+					.forEach(negociacao => this._negociacoes.adiciona(negociacao));
 				this._negociacoesView.update(this._negociacoes);
 			});
 	}

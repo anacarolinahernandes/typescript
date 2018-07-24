@@ -1,5 +1,9 @@
-export class Negociacao {
+import { MeuObjeto } from './MeuObjeto';
+
+export class Negociacao implements MeuObjeto<Negociacao> {
 	constructor(readonly data: Date, readonly quantidade: number, readonly valor: number) {}
+
+	// graças ao modificador de propriedades ReadOnly do TypeScript, não é mais necessário declarar os getters! :)
 
 	get volume() {
 		return this.quantidade * this.valor;
@@ -14,6 +18,12 @@ export class Negociacao {
 			Volume: ${this.volume}`
 		);
 	}
-}
 
-// graças ao modificador de propriedades ReadOnly do TypeScript, não é mais necessário declarar os getters! :)
+	ehIgual(negociacao: Negociacao): boolean {
+		return (
+			this.data.getDate() == negociacao.data.getDate() &&
+			this.data.getMonth() == negociacao.data.getMonth() &&
+			this.data.getFullYear() == negociacao.data.getFullYear()
+		);
+	}
+}
